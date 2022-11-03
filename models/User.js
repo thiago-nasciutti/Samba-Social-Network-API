@@ -28,7 +28,7 @@ const UserSchema = new Schema(
 // get total count of comments and replies on retrieval
 UserSchema.virtual('thoughtCount').get(function () {
     return this.thoughts.reduce(
-        (total, thoughts) => total + thought.replies.length + 1,
+        (total, thought) => total + thought.replies.length + 1,
         0
     );
 });

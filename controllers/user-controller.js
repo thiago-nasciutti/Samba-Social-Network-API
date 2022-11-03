@@ -41,7 +41,7 @@ const userController = {
 
     // update user by id
     updateUser({ params, body }, res) {
-        Pizza.findOneAndUpdate({ _id: params.id }, body, {
+        User.findOneAndUpdate({ _id: params.id }, body, {
             new: true,
             runValidators: true
         })
