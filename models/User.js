@@ -1,36 +1,48 @@
-const { Schema, model } = require('mongoose');
-const dateFormat = require('../utils/dateFormat');
+const { Schema, model, Types } = require('mongoose');
+
+var validateEmail = function (email) {
+    var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return re.test(email)
+};
 
 const UserSchema = new Schema(
     {
-        userName: {
+        username: {
             type: String,
+            unique: true,
             required: true,
             trim: true
+        },
+        email: {
+            type: String,
+            unique: true,
+            required: true,
+            validate: [validateEmail, 'Please insert a valid email address'],
+            match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please insert a valid email address']
         },
         thoughts: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'Thought'
             }
+        ],
+        friends: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User'
+            }
         ]
     },
     {
         toJSON: {
             virtuals: true,
-            getters: true
         },
-        // prevents virtuals from creating duplicate of _id as `id`
         id: false
     }
 );
 
-// get total count of comments and replies on retrieval
-UserSchema.virtual('thoughtCount').get(function () {
-    return this.thoughts.reduce(
-        (total, thought) => total + thought.replies.length + 1,
-        0
-    );
+UserSchema.virtual("friendCount").get(function () {
+    return this.friends.length;
 });
 
 const User = model('User', UserSchema);
